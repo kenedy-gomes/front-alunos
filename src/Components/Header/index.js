@@ -1,30 +1,8 @@
-    import styled from 'styled-components';
+import styled from "styled-components";
+import "./styles.css";
 
-    const Header = () => {
-        return(
-            <Container>
-                  <h1>Login</h1>
-            </Container>
-        )
-    }
+const Header = () => {
+  return <h1>pagina Listagem</h1>;
+};
 
-    export default Header;
-
-    const Container = styled.h1`
-    font-size: medium;
-    margin: 0em;
-    height: 5em;
-    width: 100%;
-    background-color: #2F4F4F;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    `;
- 
- 
-
-    
-
-
-
+export default Header;
