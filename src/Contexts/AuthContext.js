@@ -1,15 +1,13 @@
-import React, { createContext, useState, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
-  
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
 
-  // Verificar se o usuário está autenticado ao carregar o contexto
   useEffect(() => {
-    const userToken = localStorage.getItem("token");
-    const usersStorage = localStorage.getItem("user");
+    const userToken = localStorage.getItem("user_token");
+    const usersStorage = localStorage.getItem("users_bd");
 
     if (userToken && usersStorage) {
       const hasUser = JSON.parse(usersStorage)?.filter(
@@ -20,10 +18,27 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-   
+  const signin = (email, password) => {
+    const usersStorage = JSON.parse(localStorage.getItem("users_bd"));
+
+    const hasUser = usersStorage?.filter((user) => user.email === email);
+
+    if (hasUser?.length) {
+      if (hasUser[0].email === email && hasUser[0].password === password) {
+        const token = Math.random().toString(36).substring(2);
+        localStorage.setItem("user_token", JSON.stringify({ email, token }));
+        setUser({ email, password });
+        return;
+      } else {
+        return "E-mail ou senha incorretos";
+      }
+    } else {
+      return "Usuário não cadastrado";
+    }
+  };
 
   const signup = (email, password) => {
-    const usersStorage = JSON.parse(localStorage.getItem("user"));
+    const usersStorage = JSON.parse(localStorage.getItem("users_bd"));
 
     const hasUser = usersStorage?.filter((user) => user.email === email);
 
@@ -39,20 +54,19 @@ export const AuthProvider = ({ children }) => {
       newUser = [{ email, password }];
     }
 
-    localStorage.setItem("user", JSON.stringify(newUser));
+    localStorage.setItem("users_bd", JSON.stringify(newUser));
 
     return;
   };
 
-  const logout = () => {
+  const signout = () => {
     setUser(null);
-    localStorage.removeItem("token");
-
+    localStorage.removeItem("user_token");
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, signed: !!user,  signup, logout }}
+      value={{ user, signed: !!user, signin, signup, signout }}
     >
       {children}
     </AuthContext.Provider>
