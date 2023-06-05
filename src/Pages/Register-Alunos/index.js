@@ -3,29 +3,50 @@ import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Input } from '@
 import axios from 'axios';
 import styled from 'styled-components';
 import { Formik } from 'formik';
+import { toast } from 'react-toastify';
 
 const URL = 'http://localhost:8080/alunos/cadastro'
 
 const Register = () => {
 
     const handleSubmit1 = (data) => {
-        axios
-          .post(URL, {
-            name: data.name,
-            cpf: data.cpf,
-            email: data.email,
-            password: data.password
-          })
-          .then(function (response) {
-            console.log(response);
-            alert("Cadastro efetuado!");
-            window.location.href = "http://localhost:3000";
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      };
-      
+    
+        if (data.name && data.cpf && data.email && data.password) {
+
+            const existeNoBanco = verificarNoBanco(data.email);
+            
+            const verificarNoBanco = (email) => {
+
+                return email === data.email;
+            };
+
+            if (existeNoBanco) {
+                toast.error('O email já está cadastrado.');
+            } else {
+                axios
+                    .post(URL, {
+                        name: data.name,
+                        cpf: data.cpf,
+                        email: data.email,
+                        password: data.password
+                    })
+                    .then(function () {
+                        toast.success('Cadastro efetuado!');
+                        window.location.href = "/";
+
+                    })
+            }
+
+        
+
+
+        } else {
+            toast.error("Preencha todos os campos!")
+        }
+
+
+    }
+
     return (
         <ContainerGroup>
             <Formik
@@ -41,7 +62,7 @@ const Register = () => {
                     }
                     return errors;
                 }}
-                 
+
                 onSubmit={handleSubmit1}
             >
                 {({

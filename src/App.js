@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify";
 import "./App.css";
 import { AuthProvider } from "./Contexts/AuthContext";
 

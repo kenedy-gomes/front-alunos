@@ -3,51 +3,32 @@ import React, { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  
   const [user, setUser] = useState(null);
 
   // Verificar se o usuário está autenticado ao carregar o contexto
   useEffect(() => {
-    const userToken = localStorage.getItem("user_token");
+    const userToken = localStorage.getItem("token");
     const usersStorage = localStorage.getItem("user");
 
     if (userToken && usersStorage) {
-      const hasUser = JSON.parse(usersStorage)?.email;
+      const hasUser = JSON.parse(usersStorage)?.filter(
+        (user) => user.email === JSON.parse(userToken).email
+      );
 
-      if (hasUser) {
-        setUser(JSON.parse(hasUser[0]));
-      }
+      if (hasUser) setUser(hasUser[0]);
     }
   }, []);
 
-  const login = (email, password) => {
-    const usersStorage = localStorage.getItem("user");
+   
+
+  const signup = (email, password) => {
+    const usersStorage = JSON.parse(localStorage.getItem("user"));
+
     const hasUser = usersStorage?.filter((user) => user.email === email);
 
-    if (hasUser) {
-      if (hasUser === email && hasUser === password) {
-        const token =
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15);
-        localStorage.setItem(
-          "user_token",
-          JSON.stringify({ email, password, token })
-        );
-        setUser({ email, password });
-        return;
-      } else {
-        return "Email ou Password incorreto!";
-      }
-    } else {
-      return "Usario não cadastrado!";
-    }
-  };
-
-  const Signup = (email, password) => {
-    const usersStorage = localStorage.getItem("user");
-    const hasUser = usersStorage?.filter((user) => user.email === email);
-
-    if (hasUser) {
-      return "Já tem uma conta com este E-mail";
+    if (hasUser?.length) {
+      return "Já tem uma conta com esse E-mail";
     }
 
     let newUser;
@@ -59,17 +40,19 @@ export const AuthProvider = ({ children }) => {
     }
 
     localStorage.setItem("user", JSON.stringify(newUser));
+
     return;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user_token");
+    localStorage.removeItem("token");
+
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, signed: !!user, login, Signup, logout }}
+      value={{ user, signed: !!user,  signup, logout }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,25 +1,30 @@
 import { Button, Input } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import useAuth from "../../Contexts/useAuth";
 
 import styled from "styled-components";
 
 const URL = "http://localhost:8080/alunos/login";
 
 const Login = () => {
+ 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
+ 
       const response = await axios.post(URL, { email, password });
       console.log(response.data);
-      if (email && password) {
-        alert("Login efetuado com sucesso!");
+      if (email, password) {
+        toast.success("Login efetuado com sucesso!")
         window.location.href = "/listagem";
       }
+     
     } catch (error) {
-      alert("Email ou Password incorreto!", error);
+        toast.error("Email ou Password incorreto!", error);
     }
   };
 
@@ -30,7 +35,7 @@ const Login = () => {
           <Title>Login</Title>
 
           <P>Email</P>
-          <Input
+          <Input 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Ex: João@gmail.com"
