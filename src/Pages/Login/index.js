@@ -1,22 +1,30 @@
 import { Button, Input } from "@chakra-ui/react";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
-
 import styled from "styled-components";
-
+import { AuthContext } from "../../Contexts/AuthContext";
+import useAuth from "../../hooks/useAuth";
 const URL = "http://localhost:8080/alunos/login";
 
 const Login = () => {
+  const { signin } = useAuth();
+  const [error, setError] = useState("");
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
       const response = await axios.post(URL, { email, password });
       console.log(response.data);
       if ((email, password)) {
+        setTimeout(() => {
+          login();
+        }, 1000);
         toast.success("Login efetuado com sucesso!");
+        login(response.data);
         window.location.href = "/listagem";
       }
     } catch (error) {
@@ -24,12 +32,17 @@ const Login = () => {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("submit", { email, password });
+    login(email, password);
+  };
+
   return (
     <ContainerGroup>
       <div className="h1">
         <FormGroup>
           <Title>Login</Title>
-
           <P>Email</P>
           <Input
             value={email}
@@ -39,13 +52,14 @@ const Login = () => {
 
           <P>Password</P>
           <Input
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Ex: 123456789"
           />
 
           <Button
-            onClick={handleLogin}
+            onClick={handleSubmit}
             margin="0.5em 0em 0em 0em"
             width="100%"
             colorScheme="teal"
@@ -53,6 +67,7 @@ const Login = () => {
           >
             Sign In
           </Button>
+
           <Link>
             Ainda não possui cadastro? <a href="/register">Register</a>
           </Link>
